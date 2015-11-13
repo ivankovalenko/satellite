@@ -4,13 +4,14 @@ import math
 from twisted.web import server, resource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web.client import Agent, readBody
-from twisted.internet import reactor, endpoints
+from twisted.internet import reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 class MainResource(resource.Resource):
     isLeaf = True
 
     url = 'http://www.n2yo.com/sat/instant-tracking.php'
+    url_info = 'http://www.n2yo.com/sat/jtest.php'
 
     def parse_pos_string(self, pos_string):
         l = pos_string.split('|')
@@ -23,16 +24,17 @@ class MainResource(resource.Resource):
             'speed': math.sqrt(398600.8 / (float(l[6]) + 6378.135)),
         }
 
-    def create_geojson(self, data):
+    def create_geojson(self, data, info):
         data = json.loads(data)
         geojson_data = {
             "type": "FeatureCollection",
             "features": []
         }
         for i in data:
+            sat_id = i.get('id')
             feature = {
               "type": "Feature",
-              "id": i.get('id'),
+              "sat_id": sat_id,
               "properties": {},
               "geometry": None,
             }
@@ -41,8 +43,28 @@ class MainResource(resource.Resource):
                 pos = self.parse_pos_string(pos_list[0]['d'])
                 feature['geometry'] = {"type": "Point", "coordinates": [pos.pop('lon'), pos.pop('lat')]}
                 feature['properties'] = pos
+                sat_info = info.get(sat_id)
+                if sat_info:
+                    feature['properties'].update({
+                        'sat_name': sat_info.get('name'),
+                        'int_designator': sat_info.get('int_designator'),
+                        'period': sat_info.get('period'),
+                    })
+                
             geojson_data['features'].append(feature)
         return json.dumps(geojson_data)
+
+    @inlineCallbacks
+    def get_info(self, s):
+        url = '%s?d=1&s=%s' % (self.url_info, s)
+        agent = Agent(reactor)
+        resp = yield agent.request('GET', url)
+        body = yield readBody(resp)
+        info = {}
+        for sat in json.loads(body):
+            sat.pop('pos')
+            info[sat['id']] = sat
+        returnValue(info)
 
     @inlineCallbacks
     def get_coords(self, s):
@@ -54,8 +76,8 @@ class MainResource(resource.Resource):
 
     @inlineCallbacks
     def get_data(self, s):
-        coords = yield self.get_coords(s)
-        geojson = self.create_geojson(coords)
+        info, coords = yield defer.gatherResults([self.get_info(s), self.get_coords(s)])
+        geojson = self.create_geojson(coords, info)
         returnValue(geojson)
         
     @inlineCallbacks
