@@ -15,13 +15,14 @@ class MainResource(resource.Resource):
 
     def parse_pos_string(self, pos_string):
         l = pos_string.split('|')
+        l = map(lambda v: float(v), l[:7])
         return {
             'lat': l[0],
             'lon': l[1],
             'azimuth': l[2],
             'elevation': l[3],
             'altitude': l[6],
-            'speed': math.sqrt(398600.8 / (float(l[6]) + 6378.135)),
+            'speed': math.sqrt(398600.8 / (l[6] + 6378.135)),
         }
 
     def create_geojson(self, data, info):
@@ -41,7 +42,7 @@ class MainResource(resource.Resource):
             pos_list = i.get('pos')
             if pos_list:
                 pos = self.parse_pos_string(pos_list[0]['d'])
-                feature['geometry'] = {"type": "Point", "coordinates": [pos.pop('lon'), pos.pop('lat')]}
+                feature['geometry'] = {"type": "Point", "coordinates": [pos.pop('lon'), pos.pop('lat'), pos['altitude']*1000]}
                 feature['properties'] = pos
                 sat_info = info.get(sat_id)
                 if sat_info:
