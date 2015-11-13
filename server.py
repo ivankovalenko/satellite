@@ -45,20 +45,27 @@ class MainResource(resource.Resource):
         return json.dumps(geojson_data)
 
     @inlineCallbacks
-    def get_data(self, request):
-        s = request.args.get('s')
-        url = self.url
-        if s:
-            url += '?d=1&s=%s' % s[0]
+    def get_coords(self, s):
+        url = '%s?d=1&s=%s' % (self.url, s)
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        geojson = self.create_geojson(body)
+        returnValue(body)
+
+    @inlineCallbacks
+    def get_data(self, s):
+        coords = yield self.get_coords(s)
+        geojson = self.create_geojson(coords)
         returnValue(geojson)
         
     @inlineCallbacks
     def defer_GET(self, request):
-        resp = yield self.get_data(request)
+        s = request.args.get('s')
+        if not s:
+            request.setResponseCode(400)
+            request.finish()
+            returnValue(0)
+        resp = yield self.get_data(s[0])
         request.setHeader("content-type", "application/json")
         request.setHeader("Access-Control-Allow-Origin", "*")
         request.write(resp)
