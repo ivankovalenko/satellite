@@ -155,7 +155,30 @@ class OrbitResource(MainResource):
         
     def get_geometry(self, parsed_pos):
         coords = [(pos.pop('lon'), pos.pop('lat'), pos['altitude']*1000) for pos in parsed_pos]
-        return {"type": "LineString", "coordinates": coords}
+        is_positive = coords[0][0] > 0
+        lines = []
+        j = 0
+        for i, c in enumerate(coords):
+            # For True case both values must be the same
+            if not ((c[0] > 0) ^ is_positive):
+                continue
+            is_positive = not is_positive 
+            # <90 because need only catch changed sign near -180 and 180 lon
+            if abs(c[0]) < 90:
+                continue
+            lines.append(coords[j:i])
+            j = i
+        else:
+            lines.append(coords[j:])
+            
+        for line in lines:
+            line.insert(0, (-180, line[0][1], line[0][2]))
+            line.append((180, line[-1][1], line[-1][2]))
+        
+        lines[0].pop(0)
+        lines[-1].pop()
+        
+        return {"type": "MultiLineString", "coordinates": lines}
     
     def get_properties(self, parsed_pos):
         return dict()
