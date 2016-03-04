@@ -207,5 +207,5 @@ class OrbitResource(MainResource):
 root = resource.Resource()
 root.putChild('', MainResource())
 root.putChild('orbit', OrbitResource())
-endpoints.serverFromString(reactor, "tcp:8080").listen(server.Site(root))
+endpoints.serverFromString(reactor, "tcp:80").listen(server.Site(root))
 reactor.run()
