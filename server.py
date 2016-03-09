@@ -172,8 +172,10 @@ class OrbitResource(MainResource):
             lines.append(coords[j:])
             
         for line in lines:
-            line.insert(0, (-180, line[0][1], line[0][2]))
-            line.append((180, line[-1][1], line[-1][2]))
+            start_lon = 180 if line[0][0] > 0 else -180
+            end_lon = 180 if line[-1][0] > 0 else -180
+            line.insert(0, (start_lon, line[0][1], line[0][2]))
+            line.append((end_lon, line[-1][1], line[-1][2]))
         
         lines[0].pop(0)
         lines[-1].pop()
