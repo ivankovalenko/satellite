@@ -171,11 +171,28 @@ class OrbitResource(MainResource):
         else:
             lines.append(coords[j:])
             
+        def calc_lat(first_point, second_point):
+            a = first_point[0] - second_point[0]
+            b = first_point[1] - second_point[1]
+            tga = a/b
+            if first_point[0] > 0:
+                a1 = 180 - first_point[0]
+            else:
+                a1 = -180 - first_point[0]
+            return a1/tga
+        
         for line in lines:
             start_lon = 180 if line[0][0] > 0 else -180
             end_lon = 180 if line[-1][0] > 0 else -180
-            line.insert(0, (start_lon, line[0][1], line[0][2]))
-            line.append((end_lon, line[-1][1], line[-1][2]))
+                
+            start_lat_diff = calc_lat(line[0], line[1])
+            end_lat_diff = calc_lat(line[-1], line[-2])
+            
+            start_lat = line[0][1] + start_lat_diff
+            end_lat = line[-1][1] + end_lat_diff
+                 
+            line.insert(0, (start_lon, start_lat, line[0][2]))
+            line.append((end_lon, end_lat, line[-1][2]))
         
         lines[0].pop(0)
         lines[-1].pop()
