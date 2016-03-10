@@ -34,7 +34,7 @@ class MainResource(resource.Resource):
     def get_properties(self, parsed_pos):
         return parsed_pos
 
-    def create_geojson(self, data, info):
+    def create_geojson(self, data, info, **kwargs):
         geojson_data = {
             "type": "FeatureCollection",
             "features": []
@@ -49,7 +49,7 @@ class MainResource(resource.Resource):
             }
             pos_list = i.get('pos')
             if pos_list:
-                parsed_pos = self.parse_pos_list(pos_list)
+                parsed_pos = self.parse_pos_list(pos_list, **kwargs)
                 feature['geometry'] = self.get_geometry(parsed_pos)
                 feature['properties'] = self.get_properties(parsed_pos)
                 sat_info = info.get(sat_id)
@@ -125,7 +125,7 @@ class OrbitResource(MainResource):
     def get_orb_data(self, s):
         info = yield self.get_info_with_coords(s)
         coords = [{'id': k, 'pos': v.pop('pos')} for k, v in info.items()]
-        geojson = self.create_geojson(coords, info)
+        geojson = self.create_geojson(coords, info, altitude_index=2)
         returnValue(geojson)
         
     @inlineCallbacks
@@ -138,19 +138,19 @@ class OrbitResource(MainResource):
             for c in coords:
                 c['pos'] = [i for i in c['pos'][::p]]
                 
-        geojson = self.create_geojson(coords, info)
+        geojson = self.create_geojson(coords, info, altitude_index=6)
         returnValue(geojson)
     
-    def parse_pos_list(self, pos_list):
-        return [self.parse_pos_string(pos['d']) for pos in pos_list]
+    def parse_pos_list(self, pos_list, altitude_index, **kwargs):
+        return [self.parse_pos_string(pos['d'], altitude_index) for pos in pos_list]
     
-    def parse_pos_string(self, pos_string):
+    def parse_pos_string(self, pos_string, altitude_index=6):
         l = pos_string.split('|')
         l = map(lambda v: float(v), l[:7])
         return {
             'lat': l[0],
             'lon': l[1],
-            'altitude': l[2],
+            'altitude': l[altitude_index],
         }
         
     def get_geometry(self, parsed_pos):
