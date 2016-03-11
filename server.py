@@ -125,6 +125,11 @@ class OrbitResource(MainResource):
     def get_orb_data(self, s):
         info = yield self.get_info_with_coords(s)
         coords = [{'id': k, 'pos': v.pop('pos')} for k, v in info.items()]
+        
+        # Cut passed orbit. About 1/3 first points.
+        num_point = len(coords[0]['pos']) / 3
+        coords[0]['pos'] = coords[0]['pos'][num_point:]
+        
         geojson = self.create_geojson(coords, info, altitude_index=2)
         returnValue(geojson)
         
