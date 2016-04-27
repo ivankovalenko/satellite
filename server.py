@@ -36,6 +36,7 @@ class MainResource(resource.Resource):
             feature = {
               "type": "Feature",
               "sat_id": sat_id,
+              "id": sat_id,
               "properties": {},
               "geometry": None,
             }
