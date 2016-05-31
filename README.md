@@ -6,7 +6,7 @@ Available satellites list http://www.n2yo.com/satellites/
 
 ![Screenshot from 2016-05-31 13-12-42.png](https://bitbucket.org/repo/qq8xLk/images/4188823746-Screenshot%20from%202016-05-31%2013-12-42.png)
 
-##Demo
+## Demo
 
 * API http://satellite.mediagis.com
 * Example http://jsfiddle.net/winsent/me6yjt5p/
@@ -16,8 +16,6 @@ Available satellites list http://www.n2yo.com/satellites/
 ## Run a satellite tracking instance
 
 ```
-#!bash
-
 $ docker run --name satellite_tracking -d --restart=always mediagis/satellite-tracking
 ```
 Service will run at http://localhost:80
@@ -36,8 +34,6 @@ This request return information about `SPACE STATION` and `ALOS`.
 **Response:**
 
 ```
-#!json
-
 {
   type: "FeatureCollection",
   features: [
@@ -98,8 +94,6 @@ http://localhost/orbit/?s=25544|28931
 **Response:**
 
 ```
-#!json
-
 {
   type: "FeatureCollection",
   features: [
