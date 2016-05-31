@@ -6,6 +6,11 @@ Available satellites list http://www.n2yo.com/satellites/
 
 ![Screenshot from 2016-05-31 13-12-42.png](https://bitbucket.org/repo/qq8xLk/images/4188823746-Screenshot%20from%202016-05-31%2013-12-42.png)
 
+##Demo
+
+* API http://satellite.mediagis.com
+* Example http://jsfiddle.net/winsent/me6yjt5p/
+
 # How to use this image
 
 ## Run a satellite tracking instance
