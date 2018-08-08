@@ -71,6 +71,7 @@ class MainResource(resource.Resource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
+        print body
         for sat in json.loads(body):
             sat.pop('pos')
             info[sat['id']] = sat
@@ -82,6 +83,7 @@ class MainResource(resource.Resource):
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
+        print body
         coords = json.loads(body)
         returnValue(coords)
 
@@ -117,6 +119,7 @@ class OrbitResource(MainResource):
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
+        print body
         info = {}
         for sat in json.loads(body):
             info[sat['id']] = sat
