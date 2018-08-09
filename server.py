@@ -71,7 +71,7 @@ class MainResource(resource.Resource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        for sat in json.loads(body):
+        for sat in json.loads(body.translate(None, '\n\t\r')):
             sat.pop('pos')
             info[sat['id']] = sat
         returnValue(info)
@@ -82,7 +82,7 @@ class MainResource(resource.Resource):
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        coords = json.loads(body)
+        coords = json.loads(body.translate(None, '\n\t\r'))
         returnValue(coords)
 
     @inlineCallbacks
@@ -118,7 +118,7 @@ class OrbitResource(MainResource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        for sat in json.loads(body):
+        for sat in json.loads(body.translate(None, '\n\t\r')):
             info[sat['id']] = sat
         returnValue(info)
     
