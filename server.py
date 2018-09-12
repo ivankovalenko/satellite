@@ -120,9 +120,10 @@ class OrbitResource(MainResource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        for sat in json.loads(body.translate(None, '\n\t\r')):
-            info[sat['id']] = sat
-        returnValue(info)
+        returnValue(body)
+#        for sat in json.loads(body):
+#            info[sat['id']] = sat
+#        returnValue(info)
     
     @inlineCallbacks
     def get_orb_data(self, s):
