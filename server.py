@@ -71,10 +71,11 @@ class MainResource(resource.Resource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        for sat in json.loads(body):
-            sat.pop('pos')
-            info[sat['id']] = sat
-        returnValue(info)
+        returnValue(body)
+#        for sat in json.loads(body):
+#            sat.pop('pos')
+#            info[sat['id']] = sat
+#        returnValue(info)
 
     @inlineCallbacks
     def get_coords(self, s, d=1):
@@ -82,8 +83,9 @@ class MainResource(resource.Resource):
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        coords = json.loads(body)
-        returnValue(coords)
+        returnValue(body)
+#        coords = json.loads(body)
+#        returnValue(coords)
 
     @inlineCallbacks
     def get_data(self, s):
