@@ -74,10 +74,13 @@ class MainResource(resource.Resource):
         info = {}
         log.msg(url)
         log.msg(body)
-#        for sat in json.loads(body):
-#            sat.pop('pos')
-#            info[sat['id']] = sat
-#        returnValue(info)
+        try:
+            for sat in json.loads(body):
+                sat.pop('pos')
+                info[sat['id']] = sat
+            returnValue(info)
+        except:
+            log.err()        
 
     @inlineCallbacks
     def get_coords(self, s, d=1):
@@ -87,8 +90,11 @@ class MainResource(resource.Resource):
         body = yield readBody(resp)
         log.msg(url)
         log.msg(body)
-        coords = json.loads(body)
-#        returnValue(coords)
+        try:
+            coords = json.loads(body)
+            returnValue(coords)
+        except:
+            log.err()        
 
     @inlineCallbacks
     def get_data(self, s):
@@ -125,9 +131,12 @@ class OrbitResource(MainResource):
         info = {}
         log.msg(url)
         log.msg(body)
-#        for sat in json.loads(body):
-#            info[sat['id']] = sat
-#        returnValue(info)
+        try:
+            for sat in json.loads(body):
+                info[sat['id']] = sat
+            returnValue(info)
+        except:
+            log.err()        
     
     @inlineCallbacks
     def get_orb_data(self, s):
