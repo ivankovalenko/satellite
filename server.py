@@ -8,8 +8,6 @@ from twisted.internet import reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.python import log
 
-log.startLogging(open('/var/log/sat.log', 'w'))
-
 class MainResource(resource.Resource):
     isLeaf = True
 
@@ -74,7 +72,7 @@ class MainResource(resource.Resource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        log.msg(resp)
+        log.msg(url)
         log.msg(body)
 #        for sat in json.loads(body):
 #            sat.pop('pos')
@@ -87,9 +85,9 @@ class MainResource(resource.Resource):
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        log.msg(resp)
+        log.msg(url)
         log.msg(body)
-#        coords = json.loads(body)
+        coords = json.loads(body)
 #        returnValue(coords)
 
     @inlineCallbacks
@@ -125,7 +123,7 @@ class OrbitResource(MainResource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        log.msg(resp)
+        log.msg(url)
         log.msg(body)
 #        for sat in json.loads(body):
 #            info[sat['id']] = sat
@@ -238,6 +236,8 @@ class OrbitResource(MainResource):
         request.write(resp)
         request.finish()
     
+
+log.startLogging(open('/var/log/sat.log', 'w'))
 
 root = resource.Resource()
 root.putChild('', MainResource())
