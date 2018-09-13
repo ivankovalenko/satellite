@@ -4,7 +4,7 @@ import math
 from twisted.web import server, resource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web.client import Agent, readBody
-from twisted.internet import ssl, reactor, endpoints, defer
+from twisted.internet import reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.python import log
 
@@ -68,11 +68,11 @@ class MainResource(resource.Resource):
     @inlineCallbacks
     def get_info(self, s):
         url = '%s?d=1&s=%s' % (self.url_info, s)
+        log.msg(url)
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        log.msg(url)
         log.msg(body)
         try:
             for sat in json.loads(body):
@@ -85,10 +85,10 @@ class MainResource(resource.Resource):
     @inlineCallbacks
     def get_coords(self, s, d=1):
         url = '%s?d=%s&s=%s' % (self.url, d, s)
+        log.msg(url)
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        log.msg(url)
         log.msg(body)
         try:
             coords = json.loads(body)
@@ -125,11 +125,11 @@ class OrbitResource(MainResource):
     @inlineCallbacks
     def get_info_with_coords(self, s):
         url = '%s?s=%s' % (self.url_info, s)
+        log.msg(url)
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        log.msg(url)
         log.msg(body)
         try:
             for sat in json.loads(body):
