@@ -11,8 +11,8 @@ from twisted.python import log
 class MainResource(resource.Resource):
     isLeaf = True
 
-    url = 'http://www.n2yo.com/sat/instant-tracking.php'
-    url_info = 'http://www.n2yo.com/sat/jtest.php'
+    url = 'https://www.n2yo.com/sat/instant-tracking.php'
+    url_info = 'https://www.n2yo.com/sat/jtest.php'
 
     def parse_pos_string(self, pos_string):
         l = pos_string.split('|')
