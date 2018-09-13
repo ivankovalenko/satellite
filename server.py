@@ -6,6 +6,9 @@ from twisted.web.server import NOT_DONE_YET
 from twisted.web.client import Agent, readBody
 from twisted.internet import reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.logger import Logger
+
+log = Logger()
 
 class MainResource(resource.Resource):
     isLeaf = True
@@ -71,7 +74,7 @@ class MainResource(resource.Resource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        returnValue(body)
+        log.info(body)
 #        for sat in json.loads(body):
 #            sat.pop('pos')
 #            info[sat['id']] = sat
@@ -83,7 +86,7 @@ class MainResource(resource.Resource):
         agent = Agent(reactor)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        returnValue(body)
+        log.info(body)
 #        coords = json.loads(body)
 #        returnValue(coords)
 
@@ -120,7 +123,7 @@ class OrbitResource(MainResource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        returnValue(body)
+        log.info(body)
 #        for sat in json.loads(body):
 #            info[sat['id']] = sat
 #        returnValue(info)
