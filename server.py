@@ -4,9 +4,11 @@ import math
 from twisted.web import server, resource
 from twisted.web.server import NOT_DONE_YET
 from twisted.web.client import Agent, readBody
-from twisted.internet import reactor, endpoints, defer
+from twisted.internet import ssl, reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.python import log
+
+from twisted.internet.ssl import ClientContextFactory
 
 class MainResource(resource.Resource):
     isLeaf = True
