@@ -6,7 +6,8 @@ from twisted.web.server import NOT_DONE_YET
 from twisted.web.client import Agent, readBody
 from twisted.internet import ssl, reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
-from twisted.python import log
+
+#from twisted.python import log
 
 from twisted.internet.ssl import ClientContextFactory
 
@@ -74,7 +75,6 @@ class MainResource(resource.Resource):
     @inlineCallbacks
     def get_info(self, s):
         url = '%s?d=1&s=%s' % (self.url_info, s)
-        log.msg(url)
         contextFactory = WebClientContextFactory()
         agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
@@ -83,19 +83,18 @@ class MainResource(resource.Resource):
         for sat in json.loads(body):
             sat.pop('pos')
             info[sat['id']] = sat
-        log.msg(info)
+#        log.msg(info)
         returnValue(info)
 
     @inlineCallbacks
     def get_coords(self, s, d=1):
         url = '%s?d=%s&s=%s' % (self.url, d, s)
-        log.msg(url)
         contextFactory = WebClientContextFactory()
         agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         coords = json.loads(body)
-        log.msg(coords)
+#        log.msg(coords)
         returnValue(coords)
 
     @inlineCallbacks
@@ -127,19 +126,15 @@ class OrbitResource(MainResource):
     @inlineCallbacks
     def get_info_with_coords(self, s):
         url = '%s?s=%s' % (self.url_info, s)
-        log.msg(url)
         contextFactory = WebClientContextFactory()
         agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        log.msg(body)
-        try:
-            for sat in json.loads(body):
-                info[sat['id']] = sat
-            returnValue(info)
-        except:
-            log.err()        
+        for sat in json.loads(body):
+            info[sat['id']] = sat
+#        log.msg(info)
+        returnValue(info)
     
     @inlineCallbacks
     def get_orb_data(self, s):
@@ -249,7 +244,7 @@ class OrbitResource(MainResource):
         request.finish()
     
 
-log.startLogging(open('/var/log/sat.log', 'w'))
+#log.startLogging(open('/var/log/sat.log', 'w'))
 
 root = resource.Resource()
 root.putChild('', MainResource())
