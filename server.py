@@ -7,6 +7,7 @@ from twisted.web.client import Agent, readBody
 from twisted.internet import reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.python import log
+from twisted.internet.ssl import DefaultOpenSSLContextFactory
 
 class MainResource(resource.Resource):
     isLeaf = True
@@ -253,5 +254,6 @@ root.putChild('', MainResource())
 root.putChild('orbit', OrbitResource())
 
 site = server.Site(root)
-endpoints.SSL4ServerEndpoint(reactor, "tcp:80").listen(site)
+ctx = DefaultOpenSSLContextFactory(None, None)
+endpoints.SSL4ServerEndpoint(reactor, "tcp:80", ctx).listen(site)
 reactor.run()
