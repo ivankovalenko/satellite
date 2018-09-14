@@ -80,14 +80,11 @@ class MainResource(resource.Resource):
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
-        log.msg(body)
-        try:
-            for sat in json.loads(body):
-                sat.pop('pos')
-                info[sat['id']] = sat
-            returnValue(info)
-        except:
-            log.err()        
+        for sat in json.loads(body):
+            sat.pop('pos')
+            info[sat['id']] = sat
+        log.msg(info)
+        returnValue(info)
 
     @inlineCallbacks
     def get_coords(self, s, d=1):
@@ -97,12 +94,9 @@ class MainResource(resource.Resource):
         agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
-        log.msg(body)
-        try:
-            coords = json.loads(body)
-            returnValue(coords)
-        except:
-            log.err()        
+        coords = json.loads(body)
+        log.msg(coords)
+        returnValue(coords)
 
     @inlineCallbacks
     def get_data(self, s):
