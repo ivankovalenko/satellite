@@ -253,5 +253,5 @@ root.putChild('', MainResource())
 root.putChild('orbit', OrbitResource())
 
 site = server.Site(root)
-endpoints.serverFromString(reactor, "tcp:80").listenSSL(site)
+endpoints.SSL4ServerEndpoint(reactor, "tcp:80").listen(site)
 reactor.run()
