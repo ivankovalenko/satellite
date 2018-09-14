@@ -6,8 +6,12 @@ from twisted.web.server import NOT_DONE_YET
 from twisted.web.client import Agent, readBody
 from twisted.internet import reactor, endpoints, defer
 from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.ssl import ClientContextFactory
 from twisted.python import log
-from twisted.internet.ssl import DefaultOpenSSLContextFactory
+
+class WebClientContextFactory(ClientContextFactory):
+    def getContext(self, hostname, port):
+        return ClientContextFactory.getContext(self)
 
 class MainResource(resource.Resource):
     isLeaf = True
@@ -70,7 +74,8 @@ class MainResource(resource.Resource):
     def get_info(self, s):
         url = '%s?d=1&s=%s' % (self.url_info, s)
         log.msg(url)
-        agent = Agent(reactor)
+        contextFactory = WebClientContextFactory()
+        agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
@@ -87,7 +92,8 @@ class MainResource(resource.Resource):
     def get_coords(self, s, d=1):
         url = '%s?d=%s&s=%s' % (self.url, d, s)
         log.msg(url)
-        agent = Agent(reactor)
+        contextFactory = WebClientContextFactory()
+        agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         log.msg(body)
@@ -127,7 +133,8 @@ class OrbitResource(MainResource):
     def get_info_with_coords(self, s):
         url = '%s?s=%s' % (self.url_info, s)
         log.msg(url)
-        agent = Agent(reactor)
+        contextFactory = WebClientContextFactory()
+        agent = Agent(reactor, contextFactory)
         resp = yield agent.request('GET', url)
         body = yield readBody(resp)
         info = {}
@@ -254,6 +261,5 @@ root.putChild('', MainResource())
 root.putChild('orbit', OrbitResource())
 
 site = server.Site(root)
-ctx = DefaultOpenSSLContextFactory(None, None)
-endpoints.SSL4ServerEndpoint(reactor, "tcp:80", ctx).listen(site)
+endpoints.serverFromString(reactor, "tcp:80").listen(site)
 reactor.run()
