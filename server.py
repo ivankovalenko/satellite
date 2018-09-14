@@ -251,5 +251,7 @@ log.startLogging(open('/var/log/sat.log', 'w'))
 root = resource.Resource()
 root.putChild('', MainResource())
 root.putChild('orbit', OrbitResource())
-endpoints.serverFromString(reactor, "tcp:80").listen(server.Site(root))
+
+site = server.Site(root)
+endpoints.serverFromString(reactor, "tcp:80").listenSSL(site)
 reactor.run()
